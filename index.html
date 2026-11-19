@@ -1,53 +1,676 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark" class="scroll-smooth">
 <head>
-  <title>Matrix Rain</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio | Software &amp; Mobile Projects</title>
+
+  
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
   <style>
-    * {margin: 0; padding: 0;}
-    body {background: black;}
-    canvas {display: block;}
-    .centered-message {
-      text-align: center; color: #0F0; font-size: 20px;
+    html {
+      background-color: #000 !important;
+    }
+
+    body {
+      background-color: transparent !important;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    
+    .protected-img {
+      -webkit-user-drag: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
   </style>
 </head>
-<body>
-  <div class="centered-message">Work in Progress</div>
-  <canvas id="c"></canvas>
+<body class="text-base-content antialiased selection:bg-success/30 selection:text-success">
+
+  <!-- Full-Page Matrix Rain Background (z-0, sits directly over html #000) -->
+  <canvas id="c" class="fixed inset-0 z-0 pointer-events-none"></canvas>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-30 border-b border-success/25 bg-zinc-950/60 backdrop-blur-md">
+    <div class="navbar max-w-6xl mx-auto px-4">
+      <div class="navbar-start">
+        <a href="#" class="btn btn-ghost text-lg font-mono text-success tracking-wide">
+          &lt;Alamer, Mohammed/&gt;
+        </a>
+      </div>
+
+      <div class="navbar-center hidden sm:flex">
+        <ul class="menu menu-horizontal px-1 gap-1 font-medium">
+          <li><a href="#projects" class="hover:text-success">Projects</a></li>
+          <li><a href="#contact" class="hover:text-success">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="navbar-end gap-3">
+        <label class="flex items-center gap-2 cursor-pointer text-xs font-mono text-base-content/80">
+          <span class="hidden md:inline">Matrix Rain</span>
+          <input id="rain-toggle" type="checkbox" class="toggle toggle-success toggle-sm" checked />
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10 max-w-6xl mx-auto px-4">
+
+    <!-- Hero Section -->
+    <section class="hero py-12 md:py-16">
+      <div class="hero-content text-center bg-zinc-950/55 backdrop-blur-md border border-success/30 rounded-2xl p-8 md:p-12 shadow-2xl max-w-3xl">
+        <div>
+          <div class="badge badge-outline badge-success font-mono mb-4">Desktop &amp; Android Developer</div>
+          <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
+            Building Practical Tools for <span class="text-success">Health &amp; Data</span>
+          </h1>
+          <p class="py-5 text-base-content/85 text-base md:text-lg leading-relaxed">
+            Focused on clean architecture across platforms—from offline desktop record management in
+            <span class="text-base-content font-semibold">Python</span> to connected and local-first mobile apps in
+            <span class="text-base-content font-semibold">Kotlin</span>.
+          </p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <a href="#projects" class="btn btn-success font-semibold">Explore Projects</a>
+            <a href="#contact" class="btn btn-outline btn-success">Contact</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="pb-16 pt-4 scroll-mt-20">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 bg-zinc-950/55 backdrop-blur-md border border-success/25 rounded-2xl p-6">
+        <div>
+          <h2 class="text-3xl font-bold">Featured Projects</h2>
+          <p class="text-sm text-base-content/75 mt-1">
+            Click any project to inspect features, architecture notes, and screenshots.
+          </p>
+        </div>
+
+        <!-- Category Filter Tabs -->
+        <div id="filter-tabs" role="tablist" class="tabs tabs-box bg-black/50 border border-success/25">
+          <!-- Buttons injected by script -->
+        </div>
+      </div>
+
+      <!-- Responsive Project Cards Grid -->
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Cards injected by script -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer / Contact -->
+  <footer id="contact" class="relative z-10 footer footer-horizontal footer-center bg-zinc-950/60 backdrop-blur-md border-t border-success/25 text-base-content p-8 mt-8">
+    <aside>
+      <p class="font-mono text-success font-bold text-base">&lt;Alamer, Mohammed/&gt;</p>
+      <p class="text-sm text-base-content/75">Mohammed R Alamer, Eastern Province, Al-Ahsa(Check out my CV for contact)</p>
+    </aside>
+    <nav>
+    <!--  <div class="flex flex-wrap gap-3">
+        <a href="https://github.com/mramer3099" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline btn-success">GitHub</a>
+        <a href="alamernano@proton.me" class="btn btn-sm btn-outline">Email</a>
+      </div> -->
+    </nav>
+  </footer>
+
+  <!-- Reusable Project Details Modal -->
+  <dialog id="project-modal" class="modal z-50">
+    <div class="modal-box max-w-3xl bg-zinc-950/85 backdrop-blur-xl border border-success/35">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3" aria-label="Close">✕</button>
+      </form>
+
+      <div id="modal-content">
+        <!-- Populated dynamically by script -->
+      </div>
+
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-sm">Close</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- Matrix Rain Script -->
   <script>
-    var c = document.getElementById("c");
-    var ctx = c.getContext("2d");
+    (function () {
+      const c = document.getElementById("c");
+      const ctx = c.getContext("2d");
+      const rainToggle = document.getElementById("rain-toggle");
 
-    function resizeCanvas() {
-      c.width = window.innerWidth;
-      c.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+      const binaryChars = "1001010101110101010101010010101000101011101111010101010110101010101010101110000101".split("");
+      const fontSize = 15;
+      let columns = 0;
+      let drops = [];
+      let rainEnabled = true;
+      let animationId = null;
 
-    var binaryChars = "1001010101110101010101010010101000101011101111010101010110101010101010101110000101".split("");
-    var font_size = 15;
-    var columns = Math.floor(c.width / font_size);
-    var drops = Array(columns).fill(1);
+      function resizeCanvas() {
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
 
-    function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-      ctx.fillRect(0, 0, c.width, c.height);
+        const newColumns = Math.floor(c.width / fontSize);
+        const newDrops = Array(newColumns).fill(1);
 
-      ctx.fillStyle = "#0F0";
-      ctx.font = font_size + "px arial";
-      for(var i = 0; i < drops.length; i++) {
-        var text = binaryChars[Math.floor(Math.random() * binaryChars.length)];
-        ctx.fillText(text, i * font_size, drops[i] * font_size);
-        if(drops[i] * font_size > c.height && Math.random() > 0.975) {
-          drops[i] = 0;
+        for (let i = 0; i < Math.min(drops.length, newDrops.length); i++) {
+          newDrops[i] = drops[i];
         }
-        drops[i]++;
+        columns = newColumns;
+        drops = newDrops;
       }
-      requestAnimationFrame(draw);
+
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      function draw() {
+        if (!rainEnabled) return;
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.06)";
+        ctx.fillRect(0, 0, c.width, c.height);
+
+        ctx.fillStyle = "rgba(0, 255, 70, 0.72)";
+        ctx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = binaryChars[Math.floor(Math.random() * binaryChars.length)];
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          if (drops[i] * fontSize > c.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+        animationId = requestAnimationFrame(draw);
+      }
+
+      rainToggle.addEventListener("change", (e) => {
+        rainEnabled = e.target.checked;
+        if (rainEnabled) {
+          c.style.opacity = "1";
+          draw();
+        } else {
+          cancelAnimationFrame(animationId);
+          ctx.clearRect(0, 0, c.width, c.height);
+          c.style.opacity = "0";
+        }
+      });
+
+      draw();
+    })();
+  </script>
+
+  <!-- Projects Data & Gallery Script -->
+  <script>
+    // Automatically checks next to index.html first, then inside screenshots/
+    const SCREENSHOT_SEARCH_PATHS = ["", "screenshots/"];
+
+    /**
+     * Add new projects by appending an object to the PROJECTS array below.
+     * New categories added to `category` will automatically generate filter tabs.
+     */
+    const PROJECTS = [
+      {
+        id: "patient-desktop",
+        title: "Patient File Manager",
+        subtitle: "Desktop Application",
+        category: "Desktop",
+        status: "Completed",
+        summary:
+          "A desktop application built with Python and Tkinter using a local SQLite database to organize, search, and manage patient records efficiently.",
+        architectureNote:
+          "Served as the architectural foundation for the later Android port—defining record schemas, search flows, and modular data handling.",
+        techStack: ["Python", "Tkinter", "SQLite"],
+        features: [
+          "Create, update, search, and archive patient files locally",
+          "Structured relational storage powered by SQLite",
+          "Clean, responsive Tkinter desktop interface for daily workflow"
+        ],
+        screenshots: [
+          "OldApp1.jpeg",
+          "OldApp2.jpeg",
+          "OldApp3.jpeg"
+        ],
+        repoUrl: "",
+        demoUrl: ""
+      },
+      {
+        id: "patient-android",
+        title: "Patient File Manager Mobile",
+        subtitle: "Android Evolution",
+        category: "Android",
+        status: "Architecture Port+",
+        summary:
+          "An Android app adapted from the Python desktop app's architecture using Kotlin and Firebase, expanding patient management with mobile workflows and cloud sync.",
+        architectureNote:
+          "Re-imagined the desktop app's data model and screen structure for Android while replacing local SQLite with Firebase for real-time accessibility.",
+        techStack: ["Kotlin", "Firebase", "Android"],
+        features: [
+          "Follows and expands upon the Python desktop app architecture",
+          "Cloud-synced patient records and real-time updates via Firebase",
+          "Extended mobile capabilities beyond the original desktop feature set"
+        ],
+        screenshots: [
+          "1 HajerApp.jpeg",
+          "2 HajerApp.jpeg",
+          "3 HajerApp.jpeg",
+          "4 HajerApp.jpeg"
+        ],
+        repoUrl: "",
+        demoUrl: ""
+      },
+      {
+        id: "family-wellness",
+        title: "Family Wellness & Medicine Tracker",
+        subtitle: "Offline-First Android App",
+        category: "Android",
+        status: "Completed",
+        summary:
+          "A private Android wellness app built in Kotlin to track family medicines, schedules, and dosages—running 100% locally with no cloud dependency.",
+        architectureNote:
+          "Designed around privacy and reliability so family medication tracking works anytime without requiring an internet connection.",
+        techStack: ["Kotlin", "Local Storage", "Android"],
+        features: [
+          "Track medicines, dosages, and schedules for family members",
+          "100% local storage—sensitive health data never leaves the device",
+          "Fast, lightweight Kotlin UI built for everyday household use"
+        ],
+        screenshots: [
+          "NewApp1.jpeg",
+          "NewApp2.jpeg",
+          "NewApp3.jpeg"
+        ],
+        repoUrl: "",
+        demoUrl: ""
+      }
+
+      /*
+       * TEMPLATE FOR PROJECT #4:
+       * {
+       *   id: "project-four",
+       *   title: "Project Name",
+       *   subtitle: "Platform / Type",
+       *   category: "Android", // or "Desktop", "Web", etc.
+       *   status: "In Progress",
+       *   summary: "Short 2-line overview of the project.",
+       *   architectureNote: "Key technical or architectural decision.",
+       *   techStack: ["Tech 1", "Tech 2"],
+       *   features: ["Feature A", "Feature B"],
+       *   screenshots: ["App4_1.jpeg", "App4_2.jpeg"],
+       *   repoUrl: "",
+       *   demoUrl: ""
+       * }
+       */
+    ];
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
-    draw();
+    // Global image error handler: tries next folder in SCREENSHOT_SEARCH_PATHS, then falls back cleanly
+    window.handleImgError = function (img) {
+      const filename = img.dataset.filename || "";
+      const nextAttempt = Number(img.dataset.attempt || 0) + 1;
+
+      if (filename && nextAttempt < SCREENSHOT_SEARCH_PATHS.length) {
+        img.dataset.attempt = String(nextAttempt);
+        img.src = encodeURI(SCREENSHOT_SEARCH_PATHS[nextAttempt] + filename);
+        return;
+      }
+
+      img.onerror = null;
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">` +
+        `<rect width="800" height="500" fill="#0a0f0d"/>` +
+        `<rect x="20" y="20" width="760" height="460" rx="16" fill="none" stroke="#22c55e" stroke-opacity="0.35" stroke-dasharray="8 8"/>` +
+        `<text x="50%" y="46%" text-anchor="middle" fill="#22c55e" font-family="monospace" font-size="22">${escapeHtml(filename || "Screenshot")}</text>` +
+        `<text x="50%" y="55%" text-anchor="middle" fill="#9ca3af" font-family="monospace" font-size="14">Place image next to index.html or inside screenshots/</text>` +
+        `</svg>`;
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    };
+
+   
+    function renderProtectedScreenshot(filename, altText, extraContainerClass = "", extraImgClass = "object-contain") {
+      const initialSrc = encodeURI(SCREENSHOT_SEARCH_PATHS[0] + filename);
+      return `
+        <div class="protected-media relative overflow-hidden select-none bg-black/45 ${extraContainerClass}">
+          <img
+            src="${initialSrc}"
+            data-filename="${escapeHtml(filename)}"
+            data-attempt="0"
+            alt="${escapeHtml(altText)}"
+            draggable="false"
+            onerror="handleImgError(this)"
+            class="protected-img w-full h-full ${extraImgClass} pointer-events-none select-none"
+          />
+          <!-- Transparent shield blocking casual right-click & drag -->
+          <div
+            class="protected-shield absolute inset-0 z-10 bg-transparent"
+            oncontextmenu="return false;"
+            ondragstart="return false;"
+            aria-hidden="true"
+          ></div>
+        </div>
+      `;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const grid = document.getElementById("projects-grid");
+      const filterTabs = document.getElementById("filter-tabs");
+      const modal = document.getElementById("project-modal");
+      const modalContent = document.getElementById("modal-content");
+
+      let activeCategory = "All";
+      let currentModalProject = null;
+      let currentSlideIndex = 0;
+
+      function getCategories() {
+        const unique = [...new Set(PROJECTS.map((p) => p.category))];
+        return ["All", ...unique];
+      }
+
+      function renderTabs() {
+        const categories = getCategories();
+        filterTabs.innerHTML = categories
+          .map((cat) => {
+            const isActive = cat === activeCategory;
+            return `
+              <button
+                type="button"
+                role="tab"
+                data-category="${escapeHtml(cat)}"
+                class="tab font-medium ${isActive ? "tab-active bg-success/20 text-success" : "text-base-content/75 hover:text-success"}"
+              >
+                ${escapeHtml(cat)}
+              </button>
+            `;
+          })
+          .join("");
+
+        filterTabs.querySelectorAll("button[data-category]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            activeCategory = btn.dataset.category;
+            renderTabs();
+            renderProjects();
+          });
+        });
+      }
+
+      function renderProjects() {
+        const filtered =
+          activeCategory === "All"
+            ? PROJECTS
+            : PROJECTS.filter((p) => p.category === activeCategory);
+
+        grid.innerHTML = filtered
+          .map((project) => {
+            const coverFile = project.screenshots[0];
+            const photoCount = project.screenshots.length;
+            const techBadges = project.techStack
+              .map((tech) => `<span class="badge badge-outline badge-sm">${escapeHtml(tech)}</span>`)
+              .join("");
+
+            return `
+              <article class="card bg-zinc-950/55 backdrop-blur-md border border-success/25 hover:border-success/70 transition-all duration-300 shadow-xl overflow-hidden flex flex-col">
+                <figure
+                  class="relative h-56 w-full border-b border-success/20 cursor-pointer open-modal-trigger"
+                  data-project-id="${escapeHtml(project.id)}"
+                  title="Click to view gallery and details"
+                >
+                  ${renderProtectedScreenshot(coverFile, `${project.title} preview`, "w-full h-full")}
+                  <span class="badge badge-neutral badge-xs font-mono absolute bottom-2 right-2 z-20 pointer-events-none bg-black/80 border-success/30 text-success">
+                    ${photoCount} ${photoCount === 1 ? "photo" : "photos"}
+                  </span>
+                </figure>
+
+                <div class="card-body flex-1 justify-between p-5">
+                  <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                      <span class="badge badge-success badge-outline badge-xs font-mono">${escapeHtml(project.category)}</span>
+                      <span class="text-xs font-mono text-base-content/60">${escapeHtml(project.status)}</span>
+                    </div>
+
+                    <h3 class="card-title text-lg leading-snug">${escapeHtml(project.title)}</h3>
+                    <p class="text-xs text-success/80 font-mono mb-2">${escapeHtml(project.subtitle)}</p>
+                    <p class="text-sm text-base-content/80 line-clamp-3">${escapeHtml(project.summary)}</p>
+                  </div>
+
+                  <div class="mt-4">
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                      ${techBadges}
+                    </div>
+
+                    <div class="card-actions justify-between items-center">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-success btn-outline open-modal-trigger"
+                        data-project-id="${escapeHtml(project.id)}"
+                      >
+                        View Details &amp; Gallery
+                      </button>
+
+                      ${
+                        project.repoUrl
+                          ? `<a href="${escapeHtml(project.repoUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-ghost">GitHub</a>`
+                          : ""
+                      }
+                    </div>
+                  </div>
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+
+        grid.querySelectorAll(".open-modal-trigger").forEach((el) => {
+          el.addEventListener("click", () => openProjectModal(el.dataset.projectId));
+        });
+      }
+
+      function updateModalGallery() {
+        if (!currentModalProject) return;
+
+        const total = currentModalProject.screenshots.length;
+        const filename = currentModalProject.screenshots[currentSlideIndex];
+
+        const stage = document.getElementById("modal-gallery-stage");
+        const counter = document.getElementById("modal-gallery-counter");
+        const thumbButtons = modalContent.querySelectorAll("[data-thumb-index]");
+
+        if (stage) {
+          stage.innerHTML = renderProtectedScreenshot(
+            filename,
+            `${currentModalProject.title} - Screenshot ${currentSlideIndex + 1}`,
+            "w-full h-72 md:h-96"
+          );
+        }
+
+        if (counter) {
+          counter.textContent = `${currentSlideIndex + 1} / ${total}`;
+        }
+
+        thumbButtons.forEach((btn) => {
+          const idx = Number(btn.dataset.thumbIndex);
+          if (idx === currentSlideIndex) {
+            btn.classList.add("ring-2", "ring-success", "opacity-100");
+            btn.classList.remove("opacity-55");
+          } else {
+            btn.classList.remove("ring-2", "ring-success", "opacity-100");
+            btn.classList.add("opacity-55");
+          }
+        });
+      }
+
+      function stepSlide(delta) {
+        if (!currentModalProject) return;
+        const total = currentModalProject.screenshots.length;
+        currentSlideIndex = (currentSlideIndex + delta + total) % total;
+        updateModalGallery();
+      }
+
+      function openProjectModal(projectId) {
+        const project = PROJECTS.find((p) => p.id === projectId);
+        if (!project) return;
+
+        currentModalProject = project;
+        currentSlideIndex = 0;
+
+        const techBadges = project.techStack
+          .map((tech) => `<span class="badge badge-outline badge-success badge-sm">${escapeHtml(tech)}</span>`)
+          .join("");
+
+        const featureItems = project.features
+          .map((item) => `<li class="text-sm text-base-content/85">${escapeHtml(item)}</li>`)
+          .join("");
+
+        const thumbnailsHtml = project.screenshots
+          .map((file, index) => `
+            <button
+              type="button"
+              data-thumb-index="${index}"
+              class="rounded-lg overflow-hidden border border-success/25 w-20 h-14 shrink-0 transition-all cursor-pointer hover:opacity-100"
+              aria-label="View screenshot ${index + 1}"
+            >
+              ${renderProtectedScreenshot(file, `${project.title} thumbnail ${index + 1}`, "w-full h-full", "object-cover")}
+            </button>
+          `)
+          .join("");
+
+        modalContent.innerHTML = `
+          <div class="space-y-5">
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                <span class="badge badge-success font-mono">${escapeHtml(project.category)}</span>
+                <span class="badge badge-ghost font-mono">${escapeHtml(project.status)}</span>
+              </div>
+              <h3 class="text-2xl font-bold">${escapeHtml(project.title)}</h3>
+              <p class="text-sm font-mono text-success/80">${escapeHtml(project.subtitle)}</p>
+            </div>
+
+            <!-- Protected Screenshot Gallery -->
+            <div class="space-y-3">
+              <div class="relative rounded-xl border border-success/25 overflow-hidden bg-black/75">
+                <div id="modal-gallery-stage"></div>
+
+                ${
+                  project.screenshots.length > 1
+                    ? `
+                      <button
+                        type="button"
+                        id="gallery-prev"
+                        class="btn btn-circle btn-sm bg-black/70 border-success/40 text-success hover:bg-success hover:text-black absolute left-3 top-1/2 -translate-y-1/2 z-20"
+                        aria-label="Previous screenshot"
+                      >❮</button>
+                      <button
+                        type="button"
+                        id="gallery-next"
+                        class="btn btn-circle btn-sm bg-black/70 border-success/40 text-success hover:bg-success hover:text-black absolute right-3 top-1/2 -translate-y-1/2 z-20"
+                        aria-label="Next screenshot"
+                      >❯</button>
+                      <span
+                        id="modal-gallery-counter"
+                        class="badge badge-sm font-mono bg-black/80 border-success/30 text-success absolute bottom-3 right-3 z-20 pointer-events-none"
+                      ></span>
+                    `
+                    : ""
+                }
+              </div>
+
+              ${
+                project.screenshots.length > 1
+                  ? `<div class="flex gap-2 overflow-x-auto py-1 px-0.5">${thumbnailsHtml}</div>`
+                  : ""
+              }
+            </div>
+
+            <div>
+              <h4 class="text-sm font-semibold uppercase tracking-wider text-success mb-1">Overview</h4>
+              <p class="text-sm text-base-content/85 leading-relaxed">${escapeHtml(project.summary)}</p>
+            </div>
+
+            <div class="bg-black/40 border border-success/20 rounded-xl p-4">
+              <h4 class="text-xs font-mono uppercase tracking-wider text-success mb-1">Architecture Note</h4>
+              <p class="text-sm text-base-content/80">${escapeHtml(project.architectureNote)}</p>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-semibold uppercase tracking-wider text-success mb-2">Key Features</h4>
+              <ul class="list-disc list-inside space-y-1">
+                ${featureItems}
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-semibold uppercase tracking-wider text-success mb-2">Tech Stack</h4>
+              <div class="flex flex-wrap gap-2">${techBadges}</div>
+            </div>
+
+            ${
+              project.repoUrl || project.demoUrl
+                ? `<div class="flex flex-wrap gap-2 pt-2">
+                    ${project.repoUrl ? `<a href="${escapeHtml(project.repoUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-success">Source Code</a>` : ""}
+                    ${project.demoUrl ? `<a href="${escapeHtml(project.demoUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline btn-success">Download / Demo</a>` : ""}
+                  </div>`
+                : ""
+            }
+          </div>
+        `;
+
+        updateModalGallery();
+
+        const prevBtn = document.getElementById("gallery-prev");
+        const nextBtn = document.getElementById("gallery-next");
+        if (prevBtn) prevBtn.addEventListener("click", () => stepSlide(-1));
+        if (nextBtn) nextBtn.addEventListener("click", () => stepSlide(1));
+
+        modalContent.querySelectorAll("[data-thumb-index]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            currentSlideIndex = Number(btn.dataset.thumbIndex);
+            updateModalGallery();
+          });
+        });
+
+        modal.showModal();
+      }
+
+      // Keyboard arrow navigation while modal is open
+      document.addEventListener("keydown", (e) => {
+        if (!modal.open || !currentModalProject || currentModalProject.screenshots.length < 2) return;
+        if (e.key === "ArrowLeft") stepSlide(-1);
+        if (e.key === "ArrowRight") stepSlide(1);
+      });
+
+      // Block contextmenu & dragstart inside any protected media wrapper
+      document.addEventListener("contextmenu", (e) => {
+        if (e.target.closest(".protected-media")) {
+          e.preventDefault();
+        }
+      });
+
+      document.addEventListener("dragstart", (e) => {
+        if (e.target.closest(".protected-media")) {
+          e.preventDefault();
+        }
+      });
+
+      renderTabs();
+      renderProjects();
+    });
   </script>
 </body>
 </html>
